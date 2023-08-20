@@ -1,34 +1,42 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { gql, useQuery } from '@apollo/client'
 import './App.css'
 
+const DOGS = gql`
+    query {
+  dogs {
+    id
+    name
+    description
+    thumbnail {
+      url
+    }
+  }
+}
+  `
+
 function App() {
-  const [count, setCount] = useState(0)
+
+  // console.log(DOGS)
+  // console.log(useQuery(DOGS))
+  const { data, loading, error } = useQuery(DOGS);
+  if(loading) return "ロード中。。。"
+  if(error) return `エラー！${error}`
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <>
+        <h1>GraphQLとReact</h1>
+        <div className='dogsContainer'>
+          {data.dogs.map(( dog )=> (
+            <div key={dog.id}>
+              <div className='dogCard'>
+                <img src={dog.thumbnail.url} alt=''/>
+                <p>{dog.name}</p>
+                <p>{dog.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </>
   )
 }
 
